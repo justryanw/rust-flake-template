@@ -29,6 +29,15 @@ jobs:
         uses: DeterminateSystems/flake-checker-action@main
         with:
           fail-mode: true
+      # Build on the github action runner and push to Cachix
+      # - uses: cachix/cachix-action@v14
+      #   with:
+      #     name: justryanw
+      #     authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+      # - name: Build
+      #   run: nix build --accept-flake-config
+
+      # Or build with nixbuild and upload to Cachix from there
       - name: Setup nixbuild
         uses: nixbuild/nixbuild-action@v20
         with:
