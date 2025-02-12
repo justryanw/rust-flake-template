@@ -1,5 +1,5 @@
 # Rust Flake Template
-Simple Nix Flake template for the Rust using [Crate2Nix](https://github.com/nix-community/crate2nix).
+Simple Nix Flake template for Rust using [Crate2Nix](https://github.com/nix-community/crate2nix).
 
 ### Features
 - Builds crate dependanices individualy with [Crate2Nix](https://github.com/nix-community/crate2nix) so they can be reused between builds.
