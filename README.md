@@ -31,6 +31,3 @@ cargo run
 ### Issues / Limitations
 
 - Not tested on MacOS.
-```bash
-nix run --impure github:guibou/nixGL -- nix run
-```
