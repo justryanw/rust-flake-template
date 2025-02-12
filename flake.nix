@@ -21,7 +21,7 @@
   };
 
   outputs =
-    inputs@{ flake-parts, crate2nix, ... }:
+    { flake-parts, crate2nix, ... }@inputs:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
@@ -38,11 +38,13 @@
           ...
         }:
         let
-          buildInputs = with pkgs; [
-            # Add system deps here
-          ];
-
           name = "rust-flake-template";
+
+          systemDeps = builtins.attrValues {
+            inherit (pkgs)
+              # Add any system dependancies here
+              ;
+          };
 
           cargoNix =
             pkgs.callPackage
@@ -52,6 +54,7 @@
               })
               {
                 defaultCrateOverrides = pkgs.defaultCrateOverrides // {
+                  # Wrap root crate so any system dependancies added are available at runtime
                   ${name} = attrs: {
                     name = "${name}-${attrs.version}";
 
@@ -59,12 +62,18 @@
 
                     postInstall = ''
                       wrapProgram $out/bin/${name} \
-                        --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath buildInputs}
+                        --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath systemDeps}
                     '';
                   };
+
+                  # Provide system dependencies per crate during build
+
+                  # wayland-sys = atts: {
+                  #   nativeBuildInputs = with pkgs; [ pkg-config ];
+                  #   buildInputs = with pkgs; [ wayland ];
+                  # };
                 };
               };
-
         in
         {
           packages = {
@@ -73,18 +82,20 @@
 
           devShells.default = pkgs.mkShell {
             buildInputs =
-              buildInputs
-              ++ (with pkgs; [
-                cargo
-                rustc
-                pkg-config
-                rustfmt
-                cargo-watch
-                nix-output-monitor
-              ]);
+              systemDeps
+              ++ builtins.attrValues {
+                inherit (pkgs)
+                  cargo
+                  rustc
+                  pkg-config
+                  rustfmt
+                  cargo-watch
+                  nix-output-monitor
+                  ;
+              };
 
             RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
-            LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath buildInputs}";
+            LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath systemDeps}";
           };
         };
     };

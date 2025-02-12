@@ -2,10 +2,11 @@
 Simple Nix Flake template for the Rust using [Crate2Nix](https://github.com/nix-community/crate2nix).
 
 ### Features
-- Builds dependanices individualy with [Crate2Nix](https://github.com/nix-community/crate2nix) so they can be reused between builds.
-- Uploads built crates to a binary cache server during CI/CD.
+- Builds crate dependanices individualy with [Crate2Nix](https://github.com/nix-community/crate2nix) so they can be reused between builds.
+- Uploads built crates to a binary cache server during CI/CD if provided.
 - Local builds will pull crates from the cache server meaning the same crate doesn't need to built more than once.
 - Dev shell with everything needed to build using Cargo.
+- Wraps program with any desired system dependencies so its avaialable at runtime.
 
 ### Usage
 
@@ -17,8 +18,7 @@ nix run github:justryanw/rust-flake-template
 Build with Nix.
 ```bash
 # Clone and cd into repo
-nix develop -c $SHELL # Enter dev shell (if you dont have nom installed)
-nom build # Nice build output ( can be skipped )
+nix develop -c nom build # Nice build output ( can be skipped )
 nix run
 ```
 
